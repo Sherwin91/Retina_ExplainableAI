@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCurrentResult } from "@/lib/screening-store";
-import { MOCK_SCREENINGS } from "@/lib/mock-data";
-import { fundusSample1 } from "@/lib/demo-bundle";
+import { MOCK_SCREENINGS, fundusSample1 } from "@/lib/mock-data";
 import {
   DR_GRADES,
   gradeInfo,

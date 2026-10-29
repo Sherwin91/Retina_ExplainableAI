@@ -68,7 +68,7 @@ export const MOCK_SCREENINGS: ScreeningRecord[] = [
   makeRecord(15, "Kotra Vision Centre", 4, 0.91, probs(0.01, 0.02, 0.04, 0.02, 0.91), "completed", "Dr. Mehta (review)"),
 ];
 
-/** Aggregate demo stats for the dashboard. */
+export { fundusSample1 };
 export function computeStats(records: ScreeningRecord[]) {
   const total = records.length;
   const referred = records.filter((r) => r.grade >= 2).length;
