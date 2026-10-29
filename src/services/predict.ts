@@ -8,7 +8,7 @@
  */
 
 import gradCamMock from "@/assets/fundus-gradcam.jpg";
-import { MODEL_CARD, MOCK_BUNDLE } from "@/lib/mock-data";
+import { MODEL_CARD } from "@/lib/mock-data";
 import { type DrGrade, type ScreeningResult } from "@/lib/types";
 
 const API_BASE = import.meta.env.VITE_PREDICT_API_URL ?? "";
@@ -144,4 +144,4 @@ export async function runPrediction(
   };
 }
 
-export { MODEL_CARD, MOCK_BUNDLE };
+export { MODEL_CARD };

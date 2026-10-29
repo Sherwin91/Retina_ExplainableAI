@@ -22,11 +22,6 @@ export const MODEL_CARD = {
   trainedOn: "Synthetic demo weights — not trained on real patient data",
 } as const;
 
-export const MOCK_BUNDLE = {
-  fundusUrl: fundusSample1,
-  /** Demo Grad-CAM overlay shipped with the mock bundle. */
-  gradCamUrl: "/images/gradcam-mock.png",
-} as const;
 
 const probs = (...weights: number[]): number[] => weights;
 
@@ -76,7 +71,7 @@ export const MOCK_SCREENINGS: ScreeningRecord[] = [
 /** Aggregate demo stats for the dashboard. */
 export function computeStats(records: ScreeningRecord[]) {
   const total = records.length;
-  const referred = records.filter((r) => r.gradeInfo?.refersToSpecialist ?? r.grade >= 2).length;
+  const referred = records.filter((r) => r.grade >= 2).length;
   const pendingReferrals = records.filter((r) => r.grade >= 2 && r.referralStatus === "pending").length;
   const byGrade = [0, 1, 2, 3, 4].map(
     (g) => records.filter((r) => r.grade === g).length,
