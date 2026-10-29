@@ -10,12 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ExplainabilityRouteImport } from './routes/explainability'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as ScreeningRouteImport } from './routes/screening'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExplainabilityRoute = ExplainabilityRouteImport.update({
+  id: '/explainability',
+  path: '/explainability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -31,30 +49,51 @@ const ScreeningRoute = ScreeningRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/explainability': typeof ExplainabilityRoute
+  '/history': typeof HistoryRoute
   '/results': typeof ResultsRoute
   '/screening': typeof ScreeningRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/explainability': typeof ExplainabilityRoute
+  '/history': typeof HistoryRoute
   '/results': typeof ResultsRoute
   '/screening': typeof ScreeningRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/explainability': typeof ExplainabilityRoute
+  '/history': typeof HistoryRoute
   '/results': typeof ResultsRoute
   '/screening': typeof ScreeningRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/results' | '/screening'
+  fullPaths:
+    '/' | '/about' | '/explainability' | '/history' | '/results' | '/screening'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/results' | '/screening'
-  id: '__root__' | '/' | '/results' | '/screening'
+  to:
+    '/' | '/about' | '/explainability' | '/history' | '/results' | '/screening'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/explainability'
+    | '/history'
+    | '/results'
+    | '/screening'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ExplainabilityRoute: typeof ExplainabilityRoute
+  HistoryRoute: typeof HistoryRoute
   ResultsRoute: typeof ResultsRoute
   ScreeningRoute: typeof ScreeningRoute
 }
@@ -66,6 +105,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explainability': {
+      id: '/explainability'
+      path: '/explainability'
+      fullPath: '/explainability'
+      preLoaderRoute: typeof ExplainabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -87,6 +147,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ExplainabilityRoute: ExplainabilityRoute,
+  HistoryRoute: HistoryRoute,
   ResultsRoute: ResultsRoute,
   ScreeningRoute: ScreeningRoute,
 }
