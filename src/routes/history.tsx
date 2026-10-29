@@ -51,6 +51,7 @@ function HistoryPage() {
   const [query, setQuery] = useState("");
   const [gradeFilter, setGradeFilter] = useState("all");
   const [referralFilter, setReferralFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   const records = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -59,8 +60,12 @@ function HistoryPage() {
       if (gradeFilter !== "all" && String(r.grade) !== gradeFilter) return false;
       if (referralFilter !== "all" && r.referralStatus !== referralFilter) return false;
       return true;
-    }).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [query, gradeFilter, referralFilter]);
+    }).sort((a, b) =>
+      sortOrder === "newest"
+        ? b.createdAt.localeCompare(a.createdAt)
+        : a.createdAt.localeCompare(b.createdAt),
+    );
+  }, [query, gradeFilter, referralFilter, sortOrder]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -69,8 +74,7 @@ function HistoryPage() {
           Screening History
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Mock records only — search by screening ID or site, filter by grade and
-          referral status.
+          Mock records only — search by screening ID or site, filter by grade and referral status.
         </p>
       </div>
 
@@ -114,6 +118,15 @@ function HistoryPage() {
                   {f.label}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger className="md:w-44" aria-label="Sort screening history">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest first</SelectItem>
+              <SelectItem value="oldest">Oldest first</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
@@ -170,6 +183,7 @@ function HistoryPage() {
                   setQuery("");
                   setGradeFilter("all");
                   setReferralFilter("all");
+                  setSortOrder("newest");
                 }}
               >
                 Clear filters

@@ -1,31 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Hospital,
-  Info,
-  ScanEye,
-  ShieldAlert,
-} from "lucide-react";
+import { ArrowRight, Info, ScanEye, ShieldAlert } from "lucide-react";
+import { format } from "date-fns";
 
 import { MockDataBanner } from "@/components/mock-banner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCurrentResult } from "@/lib/screening-store";
-import { MOCK_SCREENINGS, fundusSample1 } from "@/lib/mock-data";
-import {
-  DR_GRADES,
-  gradeInfo,
-  type ScreeningResult,
-} from "@/lib/types";
-import { format } from "date-fns";
+import { DR_GRADES, gradeInfo } from "@/lib/types";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -33,37 +15,18 @@ export const Route = createFileRoute("/results")({
       { title: "EyeCare — Screening Result" },
       {
         name: "description",
-        content:
-          "Demo diabetic retinopathy grading across five severity levels with referral guidance (research prototype).",
+        content: "Screening result interface for the EyeCare research prototype.",
       },
-      { property: "og:title", content: "EyeCare — Screening Result" },
-      {
-        property: "og:description",
-        content: "Demo DR grading with referral guidance — research prototype.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Results,
 });
 
-/** Demo record shown when no analysis has run yet in this session. */
-function demoResult(): ScreeningResult {
-  const r = MOCK_SCREENINGS[3];
-  return {
-    ...r,
-    source: "mock",
-    durationMs: 1850,
-    gradCamUrl: undefined,
-    imageUrl: fundusSample1,
-  };
-}
-
 function Results() {
-  const current = useCurrentResult();
-  const result = current ?? demoResult();
-  const info = gradeInfo(result.grade);
+  const result = useCurrentResult();
+  const hasPrediction = result?.source === "model" && result.grade !== undefined;
+  const info =
+    result?.source === "model" && result.grade !== undefined ? gradeInfo(result.grade) : null;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -73,203 +36,164 @@ function Results() {
             Screening Result
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {result.id} · {format(new Date(result.createdAt), "d MMM yyyy, HH:mm")}
+            {result
+              ? `${result.id} · ${format(new Date(result.createdAt), "d MMM yyyy, HH:mm")}`
+              : "No screening has been analyzed in this session"}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Badge
-            variant="outline"
-            className={
-              result.source === "mock"
-                ? "border-amber-300/60 bg-amber-50 text-amber-900"
-                : "border-transparent bg-grade-0/15 text-grade-0"
-            }
-          >
-            {result.source === "mock" ? "Mock output" : "Model output"}
-          </Badge>
-          {!current && (
-            <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground">
-              Demo record
-            </Badge>
-          )}
-        </div>
+        <span className="rounded-full border border-amber-300/60 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-900">
+          {result?.source === "model" ? "Model output" : "Demo UI"}
+        </span>
       </div>
 
-      <MockDataBanner />
+      {result?.source !== "model" && <MockDataBanner />}
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Analysed image</CardTitle>
-            <CardDescription>{result.imageLabel}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {result.imageUrl ? (
-              <img
-                src={result.imageUrl}
-                alt="Fundus image used for this screening"
-                width={420}
-                height={420}
-                loading="lazy"
-                className="w-full rounded-lg bg-black object-contain"
-              />
-            ) : (
-              <div className="flex aspect-square items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
-                Image unavailable
-              </div>
-            )}
-            <Button asChild variant="outline" className="mt-4 w-full">
-              <Link to="/explainability">
-                <ScanEye aria-hidden="true" />
-                View Grad-CAM explanation
+      {!result ? (
+        <Card className="border-primary/30 bg-accent/30">
+          <CardContent className="flex flex-col items-start gap-4 p-6">
+            <Info className="size-8 text-primary" aria-hidden="true" />
+            <div>
+              <h2 className="font-display text-xl font-semibold text-foreground">
+                Demo UI — no real model prediction
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Upload an image from New Screening to preview the result interface. Until a
+                validated model backend is connected, EyeCare will not show a grade, confidence,
+                probability, or diagnosis.
+              </p>
+            </div>
+            <Button asChild>
+              <Link to="/screening">
+                Start a demo upload <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
           </CardContent>
         </Card>
-
-        <div className="space-y-6 lg:col-span-3">
-          <Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-5">
+          <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="font-display text-lg">Predicted grade</CardTitle>
-              <CardDescription>
-                International Clinical DR Severity Scale · demo confidence{" "}
-                {(result.confidence * 100).toFixed(1)}%
-              </CardDescription>
+              <CardTitle className="font-display text-lg">Uploaded image</CardTitle>
+              <CardDescription>{result.imageLabel}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-5">
-                {DR_GRADES.map((g) => {
-                  const active = g.grade === result.grade;
-                  return (
-                    <div
-                      key={g.grade}
-                      aria-current={active ? "true" : undefined}
-                      className={`rounded-lg border p-3 text-center transition-colors ${
-                        active
-                          ? "border-transparent ring-2 ring-ring"
-                          : "bg-muted/40"
-                      }`}
-                    >
-                      <span
-                        className={`mx-auto block size-2.5 rounded-full bg-${g.colorToken} ${
-                          active ? "" : "opacity-40"
-                        }`}
-                        aria-hidden="true"
-                      />
-                      <p
-                        className={`mt-2 text-xs font-semibold ${
-                          active ? "text-foreground" : "text-muted-foreground"
-                        }`}
-                      >
-                        {g.shortLabel}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">Grade {g.grade}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div>
-                <p className="font-display text-xl font-semibold text-foreground">
-                  {info.label}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {info.recommendation}
-                </p>
-              </div>
-
-              <Separator />
-
-              <div>
-                <p className="mb-2 text-sm font-medium text-foreground">
-                  Class probabilities (demo)
-                </p>
-                <div className="space-y-2">
-                  {DR_GRADES.map((g) => {
-                    const p = result.gradeProbabilities[g.grade] ?? 0;
-                    return (
-                      <div key={g.grade} className="flex items-center gap-3">
-                        <span className="w-24 shrink-0 text-xs text-muted-foreground">
-                          {g.shortLabel}
-                        </span>
-                        <div
-                          className="h-2 flex-1 overflow-hidden rounded-full bg-muted"
-                          role="img"
-                          aria-label={`${(p * 100).toFixed(1)}% ${g.shortLabel}`}
-                        >
-                          <div
-                            className={`h-full rounded-full bg-${g.colorToken}`}
-                            style={{ width: `${Math.max(p * 100, 2)}%` }}
-                          />
-                        </div>
-                        <span className="w-12 text-right text-xs tabular-nums text-foreground">
-                          {(p * 100).toFixed(1)}%
-                        </span>
-                      </div>
-                    );
-                  })}
+            <CardContent>
+              {result.imageUrl ? (
+                <img
+                  src={result.imageUrl}
+                  alt="Uploaded fundus image"
+                  className="w-full rounded-lg bg-black object-contain"
+                />
+              ) : (
+                <div className="flex aspect-square items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
+                  Image unavailable
                 </div>
-              </div>
+              )}
+              <Button asChild variant="outline" className="mt-4 w-full">
+                <Link to="/explainability">
+                  <ScanEye aria-hidden="true" /> View explainability
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
-          {info.refersToSpecialist && (
-            <Card className="border-grade-2/40">
+          <div className="space-y-6 lg:col-span-3">
+            <Card className={!hasPrediction ? "border-primary/30" : undefined}>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-display text-lg">
-                  <Hospital className="size-5 text-grade-2" aria-hidden="true" />
-                  Referral guidance (placeholder)
+                <CardTitle className="font-display text-lg">
+                  {hasPrediction ? "Predicted grade" : "Prediction unavailable in demo mode"}
+                </CardTitle>
+                <CardDescription>
+                  {hasPrediction
+                    ? `International Clinical DR Severity Scale · confidence ${(result.confidence! * 100).toFixed(1)}%`
+                    : "No grade or confidence is displayed because no real model response is connected."}
+                </CardDescription>
+              </CardHeader>
+              {hasPrediction && info ? (
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-5">
+                    {DR_GRADES.map((grade) => (
+                      <div
+                        key={grade.grade}
+                        className={`rounded-lg border p-3 text-center ${grade.grade === result.grade ? "ring-2 ring-ring" : "bg-muted/40"}`}
+                      >
+                        <span
+                          className={`mx-auto block size-2.5 rounded-full bg-${grade.colorToken}`}
+                          aria-hidden="true"
+                        />
+                        <p className="mt-2 text-xs font-semibold">{grade.shortLabel}</p>
+                        <p className="text-[10px] text-muted-foreground">Grade {grade.grade}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <p className="font-display text-xl font-semibold">{info.label}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{info.recommendation}</p>
+                  </div>
+                  <div className="space-y-2 border-t pt-4">
+                    <p className="text-sm font-medium">Class probabilities</p>
+                    {DR_GRADES.map((grade) => {
+                      const probability = result.gradeProbabilities?.[grade.grade] ?? 0;
+                      return (
+                        <div key={grade.grade} className="flex items-center gap-3">
+                          <span className="w-24 shrink-0 text-xs text-muted-foreground">
+                            {grade.shortLabel}
+                          </span>
+                          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className={`h-full rounded-full bg-${grade.colorToken}`}
+                              style={{ width: `${probability * 100}%` }}
+                            />
+                          </div>
+                          <span className="w-12 text-right text-xs tabular-nums">
+                            {(probability * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              ) : (
+                <CardContent>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    This uploaded image is available for interface testing only. A qualified
+                    clinician must make any clinical assessment.
+                  </p>
+                </CardContent>
+              )}
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-display text-lg">
+                  Referral guidance placeholder
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>
-                  <span className="font-medium text-foreground">Next steps:</span> share
-                  this record with the partner ophthalmologist for teleconsultation and
-                  schedule an in-person visit at the nearest district hospital.
-                </p>
-                <p>
-                  Nearest referral centre, transport support and follow-up scheduling
-                  will be configured per deployment site.
-                </p>
+              <CardContent className="text-sm leading-relaxed text-muted-foreground">
+                Referral pathways, partner facilities, and follow-up instructions will be configured
+                with local health authorities before deployment.
               </CardContent>
             </Card>
-          )}
 
-          <Alert className="border-destructive/30 bg-destructive/5">
-            <ShieldAlert className="size-4 text-destructive" aria-hidden="true" />
-            <AlertCardTitle />
-            <AlertDescription className="text-sm">
-              {result.source === "mock"
-                ? "This result was produced by mock logic, not a medical model. It must never be used for diagnosis or treatment decisions."
-                : "Model outputs are investigational and require review by a qualified ophthalmologist before any clinical decision."}
-            </AlertDescription>
-          </Alert>
+            <Alert className="border-destructive/30 bg-destructive/5">
+              <ShieldAlert className="size-4 text-destructive" aria-hidden="true" />
+              <AlertDescription>
+                This interface is not a medical diagnosis. Do not use it to make clinical decisions.
+              </AlertDescription>
+            </Alert>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <Button asChild>
           <Link to="/screening">
-            Run another screening
-            <ArrowRight aria-hidden="true" />
+            Run another screening <ArrowRight aria-hidden="true" />
           </Link>
         </Button>
         <Button asChild variant="ghost">
-          <Link to="/history">
-            <Info aria-hidden="true" />
-            Screening history
-          </Link>
+          <Link to="/history">Screening history</Link>
         </Button>
       </div>
     </div>
-  );
-}
-
-/** Small wrapper so the alert title uses the display font. */
-function AlertCardTitle() {
-  return (
-    <span className="font-display font-semibold text-foreground">
-      Not a medical diagnosis
-    </span>
   );
 }

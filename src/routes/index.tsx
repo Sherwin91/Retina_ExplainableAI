@@ -1,22 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  ClipboardList,
-  ImagePlus,
-  ScanEye,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, ClipboardList, ImagePlus, ScanEye, TrendingUp } from "lucide-react";
 
 import { GradeBadge, ReferralChip } from "@/components/grade-badge";
 import { MockDataBanner } from "@/components/mock-banner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { computeStats, MODEL_CARD, MOCK_SCREENINGS } from "@/lib/mock-data";
 import { DR_GRADES, gradeInfo } from "@/lib/types";
 import { format, formatDistanceToNowStrict } from "date-fns";
@@ -113,9 +101,9 @@ function Dashboard() {
           icon={TrendingUp}
         />
         <StatCard
-          label="Referrals pending"
+          label="Pending reviews (sample)"
           value={String(stats.pendingReferrals)}
-          hint="Awaiting ophthalmologist review"
+          hint="Sample records awaiting review"
           icon={ArrowRight}
         />
         <StatCard
@@ -177,9 +165,7 @@ function Dashboard() {
               {recent.map((r) => (
                 <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-foreground">
-                      {r.site}
-                    </p>
+                    <p className="truncate text-sm font-medium text-foreground">{r.site}</p>
                     <p className="text-xs text-muted-foreground">
                       {r.id} ·{" "}
                       {formatDistanceToNowStrict(new Date(r.createdAt), {
@@ -202,12 +188,11 @@ function Dashboard() {
         </CardHeader>
         <CardContent className="text-sm leading-relaxed text-muted-foreground">
           <p>
-            All statistics on this dashboard come from mock records and describe the
-            interface only. In a real deployment, each screening would produce a grade
-            on the International Clinical DR Severity Scale — from{" "}
-            {gradeInfo(0).label} through {gradeInfo(4).label} — with referral guidance
-            for sight-threatening grades. Last demo record generated{" "}
-            {format(new Date(MOCK_SCREENINGS[0].createdAt), "d MMM yyyy")}.
+            All statistics on this dashboard come from mock records and describe the interface only.
+            In a real deployment, each screening would produce a grade on the International Clinical
+            DR Severity Scale — from {gradeInfo(0).label} through {gradeInfo(4).label} — with
+            referral guidance for sight-threatening grades. Last demo record generated{" "}
+            {format(new Date(MOCK_SCREENINGS[0]!.createdAt), "d MMM yyyy")}.
           </p>
         </CardContent>
       </Card>

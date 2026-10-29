@@ -13,11 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
@@ -161,10 +157,9 @@ function RootComponent() {
               <Outlet />
             </main>
             <footer className="border-t px-4 py-4 text-xs leading-relaxed text-muted-foreground md:px-8">
-              EyeCare is a medical research prototype for diabetic retinopathy
-              screening. All outputs shown are mock data and do not constitute a
-              diagnosis. Anyone with vision concerns should consult a qualified
-              ophthalmologist.
+              EyeCare is a medical research prototype for diabetic retinopathy screening. All
+              outputs shown are mock data and do not constitute a diagnosis. Anyone with vision
+              concerns should consult a qualified ophthalmologist.
             </footer>
           </SidebarInset>
         </div>

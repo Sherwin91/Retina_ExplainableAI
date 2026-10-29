@@ -14,8 +14,8 @@ export function MockDataBanner({ className }: { className?: string }) {
         Demo data — not real medical results
       </AlertTitle>
       <AlertDescription className="text-amber-900">
-        EyeCare is a research prototype. Every grade, confidence and heatmap shown
-        here is mock output used to evaluate the interface. It must not be used for
+        No validated model is connected in this environment. Demo uploads do not produce a grade,
+        confidence, probability, or clinical explanation. This interface must not be used for
         diagnosis or clinical decisions.
       </AlertDescription>
     </Alert>

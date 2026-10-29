@@ -14,21 +14,10 @@ import {
 import { MockDataBanner } from "@/components/mock-banner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { setCurrentResult } from "@/lib/screening-store";
-import {
-  UPLOAD_RULES,
-  isMockMode,
-  runPrediction,
-  validateFundusImage,
-} from "@/services/predict";
+import { UPLOAD_RULES, isMockMode, runPrediction, validateFundusImage } from "@/services/predict";
 
 export const Route = createFileRoute("/screening")({
   head: () => ({
@@ -66,6 +55,7 @@ function NewScreening() {
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
+  const [referenceId, setReferenceId] = useState("");
 
   const acceptFile = useCallback((candidate: File | undefined | null) => {
     if (!candidate) return;
@@ -83,13 +73,16 @@ function NewScreening() {
     setPhase("ready");
   }, []);
 
-  const clearFile = useCallback(() => {
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(null);
-    setPreview(null);
-    setError(null);
-    setPhase("idle");
-  }, [preview]);
+  const clearFile = useCallback(
+    (revokePreview = true) => {
+      if (revokePreview && preview) URL.revokeObjectURL(preview);
+      setFile(null);
+      setPreview(null);
+      setError(null);
+      setPhase("idle");
+    },
+    [preview],
+  );
 
   const analyze = useCallback(async () => {
     if (!file) return;
@@ -97,7 +90,8 @@ function NewScreening() {
     setError(null);
     try {
       const result = await runPrediction(file);
-      clearFile();
+      if (referenceId.trim()) result.id = referenceId.trim();
+      clearFile(false);
       setCurrentResult(result);
       await navigate({ to: "/results" });
     } catch (err) {
@@ -108,7 +102,7 @@ function NewScreening() {
           : "Analysis failed. Please check the image and try again.",
       );
     }
-  }, [file, clearFile, navigate]);
+  }, [file, clearFile, navigate, referenceId]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -117,8 +111,8 @@ function NewScreening() {
           New Screening
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload a retinal fundus photograph to run a demo DR analysis. No patient
-          names or personal details are required.
+          Upload a retinal fundus photograph to run a demo DR analysis. No patient names or personal
+          details are required.
         </p>
       </div>
 
@@ -128,7 +122,7 @@ function NewScreening() {
         <CardHeader>
           <CardTitle className="font-display text-lg">Fundus image</CardTitle>
           <CardDescription>
-            JPEG or PNG · {formatBytes(UPLOAD_RULES.maxBytes)} maximum · colour fundus
+            JPEG, PNG, or WebP · {formatBytes(UPLOAD_RULES.maxBytes)} maximum · colour fundus
             photograph, one eye per image
           </CardDescription>
         </CardHeader>
@@ -165,9 +159,7 @@ function NewScreening() {
                 <p className="text-sm font-medium text-foreground">
                   Drag &amp; drop the fundus image here
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  or click to browse files
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">or click to browse files</p>
               </div>
               <input
                 ref={inputRef}
@@ -200,7 +192,7 @@ function NewScreening() {
                   <ul className="mt-2 space-y-1.5 text-xs text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="size-3.5 text-grade-0" aria-hidden="true" />
-                      File type validated (JPEG/PNG)
+                      File type validated (JPEG/PNG/WebP)
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="size-3.5 text-grade-0" aria-hidden="true" />
@@ -211,7 +203,7 @@ function NewScreening() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={clearFile}
+                  onClick={() => clearFile()}
                   disabled={phase === "analyzing"}
                 >
                   <Trash2 aria-hidden="true" />
@@ -224,12 +216,13 @@ function NewScreening() {
                   <div className="flex items-center gap-3">
                     <Loader2 className="size-4 animate-spin text-primary" aria-hidden="true" />
                     <p className="text-sm font-medium text-foreground">
-                      Analyzing image… running the demo model
+                      Preparing screening result…
                     </p>
                   </div>
                   <Progress value={70} className="h-2" aria-label="Analysis in progress" />
                   <p className="text-xs text-muted-foreground">
-                    Mock inference — the response is simulated and takes a few seconds.
+                    No model prediction is generated in demo mode. This only prepares the uploaded
+                    image for the results interface.
                   </p>
                 </div>
               ) : (
@@ -238,7 +231,7 @@ function NewScreening() {
                     <Eye aria-hidden="true" />
                     Analyze image
                   </Button>
-                  <Button variant="outline" onClick={clearFile}>
+                  <Button variant="outline" onClick={() => clearFile()}>
                     Choose another image
                   </Button>
                 </div>
@@ -253,7 +246,7 @@ function NewScreening() {
               <AlertDescription className="flex flex-wrap items-center gap-3">
                 {error}
                 {phase === "error" && (
-                  <Button size="sm" variant="outline" onClick={clearFile}>
+                  <Button size="sm" variant="outline" onClick={() => clearFile()}>
                     <RotateCcw aria-hidden="true" />
                     Start over
                   </Button>
@@ -261,12 +254,29 @@ function NewScreening() {
               </AlertDescription>
             </Alert>
           )}
+          <div className="space-y-2">
+            <label htmlFor="screening-reference" className="text-sm font-medium text-foreground">
+              Anonymous screening reference{" "}
+              <span className="font-normal text-muted-foreground">(optional)</span>
+            </label>
+            <input
+              id="screening-reference"
+              value={referenceId}
+              onChange={(event) => setReferenceId(event.target.value)}
+              maxLength={40}
+              placeholder="For example, camp-visit-042"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+            <p className="text-xs text-muted-foreground">
+              Use a non-identifying code only. Do not enter a name, phone number, or other personal
+              information.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Analysis service:{" "}
-        <code className="rounded bg-muted px-1.5 py-0.5">POST /predict</code> —{" "}
+        Analysis service: <code className="rounded bg-muted px-1.5 py-0.5">POST /predict</code> —{" "}
         {isMockMode
           ? "not configured yet, so this prototype runs in clearly-marked mock mode."
           : "configured; responses still pass through demo validation."}{" "}

@@ -10,13 +10,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MODEL_CARD } from "@/lib/mock-data";
 import { DR_GRADES } from "@/lib/types";
 
@@ -58,8 +52,7 @@ function About() {
           About EyeCare
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          A research prototype for explainable diabetic retinopathy screening in
-          rural India.
+          A research prototype for explainable diabetic retinopathy screening in rural India.
         </p>
       </div>
 
@@ -72,16 +65,15 @@ function About() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
-            Diabetic retinopathy (DR) is a leading cause of preventable blindness, and
-            people in rural areas often reach care late. EyeCare is designed so a
-            technician at a vision centre or mobile camp can photograph a retina,
-            get an immediate DR severity grade, and route sight-threatening cases to
-            an ophthalmologist quickly.
+            Diabetic retinopathy (DR) is a leading cause of preventable blindness, and people in
+            rural areas often reach care late. EyeCare is designed so a technician at a vision
+            centre or mobile camp can photograph a retina, get an immediate DR severity grade, and
+            route sight-threatening cases to an ophthalmologist quickly.
           </p>
           <p>
-            The screening flow is deliberately explainable: every result is paired
-            with a Grad-CAM heatmap so reviewers can see where the model looked, and
-            every screening keeps an anonymous record for follow-up and audit.
+            The screening flow is deliberately explainable: every result is paired with a Grad-CAM
+            heatmap so reviewers can see where the model looked, and every screening keeps an
+            anonymous record for follow-up and audit.
           </p>
         </CardContent>
       </Card>
@@ -134,16 +126,13 @@ function About() {
               <Stethoscope className="size-5 text-primary" aria-hidden="true" />
               Referral guidance (placeholder)
             </CardTitle>
-            <CardDescription>
-              To be configured for each deployment site
-            </CardDescription>
+            <CardDescription>To be configured for each deployment site</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>
-              When a screening reaches grade 2 or above, EyeCare flags it for
-              referral. The specific partner hospital, teleconsultation contact,
-              transport support and follow-up schedule will be defined with the
-              local health authority before any deployment.
+              When a screening reaches grade 2 or above, EyeCare flags it for referral. The specific
+              partner hospital, teleconsultation contact, transport support and follow-up schedule
+              will be defined with the local health authority before any deployment.
             </p>
             <p className="rounded-lg bg-muted p-3 text-xs">
               Placeholder — no referral network is connected in this prototype.
@@ -162,24 +151,21 @@ function About() {
             <ul className="space-y-1.5">
               <li className="flex items-start gap-2">
                 <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                Model card: {MODEL_CARD.name}, {MODEL_CARD.version} — synthetic demo
-                weights only.
+                Model card: {MODEL_CARD.name}, {MODEL_CARD.version} — synthetic demo weights only.
               </li>
               <li className="flex items-start gap-2">
                 <ListChecks className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 Intended real backend: a FastAPI service at{" "}
-                <code className="rounded bg-muted px-1.5 py-0.5">POST /predict</code>,
-                already wired into the app's API service layer.
+                <code className="rounded bg-muted px-1.5 py-0.5">POST /predict</code>, already wired
+                into the app's API service layer.
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                Planned inputs: colour fundus photographs (JPEG/PNG, ≤10 MB) from
-                field camps; no patient personal data.
+                Planned inputs: colour fundus photographs (JPEG/PNG, ≤10 MB) from field camps; no
+                patient personal data.
               </li>
             </ul>
-            <p className="text-xs">
-              No paid external AI service is used or required.
-            </p>
+            <p className="text-xs">No paid external AI service is used or required.</p>
           </CardContent>
         </Card>
       </div>
@@ -190,10 +176,9 @@ function About() {
             <span className="font-semibold text-foreground">
               Medical research prototype disclaimer.
             </span>{" "}
-            EyeCare is not a certified medical device and has not been evaluated by
-            any regulatory authority. Nothing in this application is medical advice,
-            diagnosis or treatment. If you have concerns about your vision, please
-            see a qualified eye-care professional.
+            EyeCare is not a certified medical device and has not been evaluated by any regulatory
+            authority. Nothing in this application is medical advice, diagnosis or treatment. If you
+            have concerns about your vision, please see a qualified eye-care professional.
           </p>
           <Button asChild variant="outline">
             <Link to="/screening">Try the demo flow</Link>

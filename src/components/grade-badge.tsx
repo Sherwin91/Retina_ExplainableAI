@@ -22,5 +22,9 @@ export function ReferralChip({ status }: { status: "none" | "pending" | "complet
     completed: { label: "Referral completed", cls: "bg-grade-0/15 text-grade-0" },
   } as const;
   const { label, cls } = map[status];
-  return <Badge variant="outline" className={`border-transparent ${cls}`}>{label}</Badge>;
+  return (
+    <Badge variant="outline" className={`border-transparent ${cls}`}>
+      {label}
+    </Badge>
+  );
 }

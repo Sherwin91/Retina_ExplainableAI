@@ -24,8 +24,7 @@ export const DR_GRADES: DrGradeInfo[] = [
     label: "No DR",
     shortLabel: "No DR",
     colorToken: "grade-0",
-    recommendation:
-      "Routine follow-up. Recommend repeat screening in 12 months.",
+    recommendation: "Routine follow-up. Recommend repeat screening in 12 months.",
     refersToSpecialist: false,
   },
   {
@@ -33,8 +32,7 @@ export const DR_GRADES: DrGradeInfo[] = [
     label: "Mild Non-Proliferative DR",
     shortLabel: "Mild",
     colorToken: "grade-1",
-    recommendation:
-      "Repeat screening in 6–12 months. No urgent referral indicated.",
+    recommendation: "Repeat screening in 6–12 months. No urgent referral indicated.",
     refersToSpecialist: false,
   },
   {
@@ -42,8 +40,7 @@ export const DR_GRADES: DrGradeInfo[] = [
     label: "Moderate Non-Proliferative DR",
     shortLabel: "Moderate",
     colorToken: "grade-2",
-    recommendation:
-      "Refer to an ophthalmologist for evaluation within a few weeks.",
+    recommendation: "Refer to an ophthalmologist for evaluation within a few weeks.",
     refersToSpecialist: true,
   },
   {
@@ -51,8 +48,7 @@ export const DR_GRADES: DrGradeInfo[] = [
     label: "Severe Non-Proliferative DR",
     shortLabel: "Severe",
     colorToken: "grade-3",
-    recommendation:
-      "Urgent referral to an ophthalmologist within 4 weeks.",
+    recommendation: "Urgent referral to an ophthalmologist within 4 weeks.",
     refersToSpecialist: true,
   },
   {
@@ -60,14 +56,13 @@ export const DR_GRADES: DrGradeInfo[] = [
     label: "Proliferative DR",
     shortLabel: "Proliferative",
     colorToken: "grade-4",
-    recommendation:
-      "Immediate referral to a retinal specialist. Sight-threatening.",
+    recommendation: "Immediate referral to a retinal specialist. Sight-threatening.",
     refersToSpecialist: true,
   },
 ];
 
 export function gradeInfo(grade: DrGrade): DrGradeInfo {
-  return DR_GRADES[grade];
+  return DR_GRADES[grade]!;
 }
 
 export type ReferralStatus = "none" | "pending" | "completed";
@@ -89,8 +84,15 @@ export interface ScreeningRecord {
 }
 
 /** Result of one analysis run — mock until a real backend is connected. */
-export interface ScreeningResult extends Omit<ScreeningRecord, "createdAt"> {
+export interface ScreeningResult extends Omit<
+  ScreeningRecord,
+  "createdAt" | "grade" | "confidence" | "gradeProbabilities"
+> {
   createdAt: string;
+  /** Present only when a configured inference service returns a prediction. */
+  grade?: DrGrade;
+  confidence?: number;
+  gradeProbabilities?: number[];
   /** Where the result came from. */
   source: "mock" | "model";
   /** Duration of the analysis run in ms. */
